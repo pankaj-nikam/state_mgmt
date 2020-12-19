@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:state_mgmt/models/product.dart';
+import 'package:provider/provider.dart';
+import 'package:state_mgmt/providers/product.dart';
 import 'package:state_mgmt/screens/product_details_screen.dart';
 
 class ProductItem extends StatelessWidget {
-  final Product _product;
-  ProductItem(this._product);
   @override
   Widget build(BuildContext context) {
+    final _product = Provider.of<Product>(context);
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: GestureDetector(
@@ -23,8 +23,12 @@ class ProductItem extends StatelessWidget {
           ),
           footer: GridTileBar(
             leading: IconButton(
-              icon: Icon(Icons.favorite),
-              onPressed: () {},
+              icon: Icon(
+                _product.isFavorite
+                    ? Icons.favorite
+                    : Icons.favorite_border_outlined,
+              ),
+              onPressed: _product.toggleFavorite,
               color: Theme.of(context).accentColor,
             ),
             trailing: IconButton(
