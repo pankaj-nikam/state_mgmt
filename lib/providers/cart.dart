@@ -33,6 +33,11 @@ class Cart with ChangeNotifier {
     return sum;
   }
 
+  void removeItem(String productId) {
+    _items.remove(productId);
+    notifyListeners();
+  }
+
   void addItem(String productId, double price, String title) {
     if (_items.containsKey(productId)) {
       //Change quantity
