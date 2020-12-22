@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 import 'package:state_mgmt/providers/cart.dart';
 import 'package:state_mgmt/providers/orders.dart';
 import 'package:state_mgmt/screens/cart_screen.dart';
+import 'package:state_mgmt/screens/orders_screen.dart';
 import 'package:state_mgmt/screens/product_details_screen.dart';
 import 'package:state_mgmt/screens/products_overview_screen.dart';
 import 'providers/products_provider.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  Intl.defaultLocale = 'en_IN';
+  initializeDateFormatting();
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -35,6 +42,7 @@ class MyApp extends StatelessWidget {
         routes: {
           ProductDetailsScreen.routeName: (ctx) => ProductDetailsScreen(),
           CartScreen.routeName: (ctx) => CartScreen(),
+          OrdersScreen.routeName: (ctx) => OrdersScreen(),
         },
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:state_mgmt/providers/cart.dart';
 
@@ -43,11 +44,15 @@ class CartListItem extends StatelessWidget {
             leading: CircleAvatar(
               child: Padding(
                 padding: const EdgeInsets.all(5.0),
-                child: FittedBox(child: Text('\$ $price')),
+                child: FittedBox(
+                    child: Text(
+                  NumberFormat.simpleCurrency().format(price),
+                )),
               ),
             ),
             title: Text(title),
-            subtitle: Text('Total: \$ ${(price * quantity)}'),
+            subtitle: Text(
+                'Total: ${NumberFormat.simpleCurrency().format(price * quantity)}'),
             trailing: Text('$quantity x'),
           ),
         ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:state_mgmt/providers/products_provider.dart';
+import 'package:state_mgmt/widgets/side_drawer.dart';
 
 class ProductDetailsScreen extends StatelessWidget {
   static const routeName = '/product-detail';
@@ -12,6 +14,7 @@ class ProductDetailsScreen extends StatelessWidget {
       listen: false,
     ).getProductById(productId);
     return Scaffold(
+      drawer: SideDrawer(),
       appBar: AppBar(
         title: Text(product.title),
       ),
@@ -30,7 +33,7 @@ class ProductDetailsScreen extends StatelessWidget {
               height: 10,
             ),
             Text(
-              '\$${product.price}',
+              NumberFormat.simpleCurrency().format(product.price),
               style: TextStyle(color: Colors.grey, fontSize: 20),
             ),
             SizedBox(height: 10),

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:state_mgmt/providers/cart.dart';
 import 'package:state_mgmt/providers/orders.dart';
 import 'package:state_mgmt/widgets/cart_list_item.dart';
+import 'package:state_mgmt/widgets/side_drawer.dart';
 
 class CartScreen extends StatelessWidget {
   static const routeName = '/CartScreen';
@@ -10,6 +12,7 @@ class CartScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final cart = Provider.of<Cart>(context);
     return Scaffold(
+      drawer: SideDrawer(),
       appBar: AppBar(
         title: Text('Your cart'),
       ),
@@ -31,7 +34,7 @@ class CartScreen extends StatelessWidget {
                   Spacer(),
                   Chip(
                     label: Text(
-                      '\$ ${cart.totalAmount}',
+                      NumberFormat.simpleCurrency().format(cart.totalAmount),
                       style: TextStyle(
                         color:
                             Theme.of(context).primaryTextTheme.headline6.color,
