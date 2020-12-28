@@ -5,6 +5,8 @@ import 'package:state_mgmt/providers/products_provider.dart';
 import 'package:state_mgmt/widgets/side_drawer.dart';
 import 'package:state_mgmt/widgets/user_product_item.dart';
 
+import 'edit_product_screen.dart';
+
 class UserProductsScreen extends StatelessWidget {
   static const routeName = '/UserProductsScreen';
   @override
@@ -16,7 +18,9 @@ class UserProductsScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).pushNamed(EditProductScreen.routeName);
+            },
           )
         ],
       ),
