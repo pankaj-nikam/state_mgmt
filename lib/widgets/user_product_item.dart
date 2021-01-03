@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:state_mgmt/providers/product.dart';
+import 'package:state_mgmt/screens/edit_product_screen.dart';
 
 class UserProductItem extends StatelessWidget {
   final Product _product;
@@ -20,7 +21,10 @@ class UserProductItem extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.edit),
               color: Theme.of(context).primaryColor,
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).pushNamed(EditProductScreen.routeName,
+                    arguments: _product.id);
+              },
             ),
             IconButton(
               icon: Icon(Icons.delete),
