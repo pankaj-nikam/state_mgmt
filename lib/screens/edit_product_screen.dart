@@ -30,6 +30,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   void _updateImageUrl() {
     if (!_imageUrlFocusNode.hasFocus) {
+      if ((!_imageUrlController.text.startsWith('http') &&
+              !_imageUrlController.text.startsWith('https')) ||
+          (!_imageUrlController.text.endsWith('.png') &&
+              !_imageUrlController.text.endsWith('.jpg') &&
+              !_imageUrlController.text.endsWith('.jpeg'))) {
+        return;
+      }
       setState(() {});
     }
   }
@@ -46,11 +53,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   void _saveForm() {
-    _form.currentState.save();
-    print(_editedProduct.title);
-    print(_editedProduct.price);
-    print(_editedProduct.description);
-    print(_editedProduct.imageUrl);
+    if (_form.currentState.validate()) {
+      _form.currentState.save();
+      print(_editedProduct.title);
+      print(_editedProduct.price);
+      print(_editedProduct.description);
+      print(_editedProduct.imageUrl);
+    }
   }
 
   @override
@@ -78,6 +87,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   onFieldSubmitted: (_) {
                     FocusScope.of(context).requestFocus(_priceFocusNode);
                   },
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Please provide a value.';
+                    }
+                    return null;
+                  },
                   onSaved: (newValue) {
                     _editedProduct = Product(
                       title: newValue,
@@ -97,6 +112,16 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   onFieldSubmitted: (_) {
                     FocusScope.of(context).requestFocus(_descriptionFocusNode);
                   },
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Please enter a price';
+                    } else if (double.tryParse(value) == null) {
+                      return 'Please enter a valid price';
+                    } else if (double.parse(value) <= 0) {
+                      return 'Price must be greater than zero.';
+                    }
+                    return null;
+                  },
                   onSaved: (newValue) {
                     _editedProduct = Product(
                       title: _editedProduct.title,
@@ -113,6 +138,14 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   maxLines: 3,
                   keyboardType: TextInputType.multiline,
                   focusNode: _descriptionFocusNode,
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Description is required.';
+                    } else if (value.length < 10) {
+                      return 'Description should be at least 10 characters long.';
+                    }
+                    return null;
+                  },
                   onSaved: (newValue) {
                     _editedProduct = Product(
                       title: _editedProduct.title,
@@ -155,6 +188,19 @@ class _EditProductScreenState extends State<EditProductScreen> {
                         focusNode: _imageUrlFocusNode,
                         onFieldSubmitted: (_) {
                           _saveForm();
+                        },
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return 'Please enter an image';
+                          } else if (!value.startsWith('http') &&
+                              !value.startsWith('https')) {
+                            return 'Please enter a valid url.';
+                          } else if (!value.endsWith('.jpg') &&
+                              !value.endsWith('.png') &&
+                              !value.endsWith('.jpeg')) {
+                            return 'Please enter a valid image url.';
+                          }
+                          return null;
                         },
                         onSaved: (newValue) {
                           _editedProduct = Product(
