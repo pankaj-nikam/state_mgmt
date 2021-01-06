@@ -55,10 +55,10 @@ class Products with ChangeNotifier {
     }
   }
 
-  void addProduct(Product product) {
+  Future<void> addProduct(Product product) {
     const url =
         'https://flutter-statemgmt-default-rtdb.firebaseio.com/products.json';
-    http
+    return http
         .post(url,
             body: jsonEncode({
               'title': product.title,
