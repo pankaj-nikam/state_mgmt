@@ -55,19 +55,18 @@ class Products with ChangeNotifier {
     }
   }
 
-  Future<void> addProduct(Product product) {
+  Future<void> addProduct(Product product) async {
     const url =
         'https://flutter-statemgmt-default-rtdb.firebaseio.com/products.json';
-    return http
-        .post(url,
-            body: jsonEncode({
-              'title': product.title,
-              'description': product.description,
-              'imageUrl': product.imageUrl,
-              'price': product.price,
-              'isFavorite': product.isFavorite,
-            }))
-        .then((response) {
+    try {
+      final response = await http.post(url,
+          body: jsonEncode({
+            'title': product.title,
+            'description': product.description,
+            'imageUrl': product.imageUrl,
+            'price': product.price,
+            'isFavorite': product.isFavorite,
+          }));
       final responseMap = jsonDecode(response.body);
       final newProduct = Product(
         title: product.title,
@@ -78,10 +77,10 @@ class Products with ChangeNotifier {
       );
       _items.add(newProduct);
       notifyListeners();
-    }).catchError((error) {
-      print(error);
-      throw error;
-    });
+    } catch (e) {
+      print(e);
+      throw e;
+    }
   }
 
   void deleteProduct(String id) {
