@@ -14,9 +14,18 @@ class Products with ChangeNotifier {
     return _items.where((element) => element.isFavorite).toList();
   }
 
-  void updateProduct(Product product) {
+  Future<void> updateProduct(Product product) async {
     final indexOfProduct = _items.indexWhere((f) => f.id == product.id);
     if (indexOfProduct >= 0) {
+      final url =
+          'https://flutter-statemgmt-default-rtdb.firebaseio.com/products/${product.id}.json';
+      await http.patch(url,
+          body: jsonEncode({
+            'title': product.title,
+            'description': product.description,
+            'imageUrl': product.imageUrl,
+            'price': product.price,
+          }));
       _items[indexOfProduct] = product;
       notifyListeners();
     }

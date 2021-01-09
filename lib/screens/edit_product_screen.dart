@@ -63,12 +63,28 @@ class _EditProductScreenState extends State<EditProductScreen> {
         isLoading = true;
       });
       if (_editedProduct.id != null) {
-        Provider.of<Products>(context, listen: false)
-            .updateProduct(_editedProduct);
-        setState(() {
-          isLoading = false;
-        });
-        Navigator.of(context).pop();
+        try {
+          await Provider.of<Products>(context, listen: false)
+              .updateProduct(_editedProduct);
+        } catch (error) {
+          await showDialog<Null>(
+              context: context,
+              builder: (ctx) => AlertDialog(
+                    title: Text('An error occurred'),
+                    content: Text('Something went wrong.'),
+                    actions: [
+                      FlatButton(
+                        child: Text('Okay'),
+                        onPressed: () => Navigator.of(ctx).pop(),
+                      ),
+                    ],
+                  ));
+        } finally {
+          setState(() {
+            isLoading = false;
+          });
+          Navigator.of(context).pop();
+        }
       } else {
         try {
           await Provider.of<Products>(context, listen: false)
