@@ -4,44 +4,41 @@ import 'package:state_mgmt/providers/orders.dart' show Orders;
 import 'package:state_mgmt/widgets/order_item.dart';
 import 'package:state_mgmt/widgets/side_drawer.dart';
 
-class OrdersScreen extends StatefulWidget {
+class OrdersScreen extends StatelessWidget {
   static const routeName = '/OrdersScreen';
-
-  @override
-  _OrdersScreenState createState() => _OrdersScreenState();
-}
-
-class _OrdersScreenState extends State<OrdersScreen> {
-  var _isLoading = false;
-  @override
-  void initState() {
-    setState(() {
-      _isLoading = true;
-    });
-    Provider.of<Orders>(context, listen: false).fetchAndSetOrders().then((_) {
-      setState(() {
-        _isLoading = false;
-      });
-    });
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
-    final orderData = Provider.of<Orders>(context);
+    print('Rendering orders');
     return Scaffold(
-      drawer: SideDrawer(),
-      appBar: AppBar(
-        title: Text('Your orders'),
-      ),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemBuilder: (context, index) {
-                return OrderItem(orderData.orders[index]);
-              },
-              itemCount: orderData.orders.length,
-            ),
-    );
+        drawer: SideDrawer(),
+        appBar: AppBar(
+          title: Text('Your orders'),
+        ),
+        body: FutureBuilder(
+          future:
+              Provider.of<Orders>(context, listen: false).fetchAndSetOrders(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else {
+              if (snapshot.hasError == false) {
+                return Consumer<Orders>(
+                  builder: (ctx, orderData, _) {
+                    return ListView.builder(
+                      itemBuilder: (context, index) {
+                        return OrderItem(orderData.orders[index]);
+                      },
+                      itemCount: orderData.orders.length,
+                    );
+                  },
+                );
+              } else {
+                return Center(
+                  child: Text('An error occurred.'),
+                );
+              }
+            }
+          },
+        ));
   }
 }
