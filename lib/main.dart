@@ -4,6 +4,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 import 'package:state_mgmt/providers/cart.dart';
 import 'package:state_mgmt/providers/orders.dart';
+import 'package:state_mgmt/screens/auth_screen.dart';
 import 'package:state_mgmt/screens/cart_screen.dart';
 import 'package:state_mgmt/screens/edit_product_screen.dart';
 import 'package:state_mgmt/screens/orders_screen.dart';
@@ -40,7 +41,7 @@ class MyApp extends StatelessWidget {
           accentColor: Colors.deepOrange,
           fontFamily: 'Lato',
         ),
-        home: ProductsOverviewScreen(),
+        home: AuthScreen(),
         routes: {
           ProductDetailsScreen.routeName: (ctx) => ProductDetailsScreen(),
           CartScreen.routeName: (ctx) => CartScreen(),
