@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:state_mgmt/models/http_exception.dart';
 import 'package:state_mgmt/providers/auth.dart';
 
 enum AuthMode { Signup, Login }
@@ -95,6 +97,15 @@ class AuthCard extends StatefulWidget {
 
 class _AuthCardState extends State<AuthCard> {
   final GlobalKey<FormState> _formKey = GlobalKey();
+  final Map<String, String> errorCodes = {
+    'EMAIL_NOT_FOUND': 'Invalid email / password.',
+    'INVALID_PASSWORD': 'Invalid email / password.',
+    'USER_DISABLED': 'Account disabled. Please contact admin.',
+    'EMAIL_EXISTS': 'Account already exists.',
+    'OPERATION_NOT_ALLOWED': 'Sign in with this method is disabled.',
+    'TOO_MANY_ATTEMPTS_TRY_LATER':
+        'Unusual activity detected. Please try in 6 hours.',
+  };
   AuthMode _authMode = AuthMode.Login;
   Map<String, String> _authData = {
     'email': '',
@@ -102,6 +113,24 @@ class _AuthCardState extends State<AuthCard> {
   };
   var _isLoading = false;
   final _passwordController = TextEditingController();
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('An error occurred'),
+        content: Text(message),
+        actions: [
+          FlatButton(
+            child: Text('Okay'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          )
+        ],
+      ),
+    );
+  }
 
   Future<void> _submit() async {
     if (!_formKey.currentState.validate()) {
@@ -112,14 +141,26 @@ class _AuthCardState extends State<AuthCard> {
     setState(() {
       _isLoading = true;
     });
-    if (_authMode == AuthMode.Login) {
-      // Log user in
-      await Provider.of<Auth>(context, listen: false)
-          .signin(_authData['email'], _authData['password']);
-    } else {
-      // Sign user up
-      await Provider.of<Auth>(context, listen: false)
-          .signup(_authData['email'], _authData['password']);
+    try {
+      if (_authMode == AuthMode.Login) {
+        // Log user in
+        await Provider.of<Auth>(context, listen: false)
+            .signin(_authData['email'], _authData['password']);
+      } else {
+        // Sign user up
+        await Provider.of<Auth>(context, listen: false)
+            .signup(_authData['email'], _authData['password']);
+      }
+    } on HttpException catch (e) {
+      var errorMessage = 'Authentication failed.';
+      if (errorCodes[e.message] != null) {
+        errorMessage = errorCodes[e.message];
+      }
+      _showErrorDialog(errorMessage);
+    } catch (error) {
+      const errorMessage =
+          'Could not authenticate you. Please try again later.';
+      _showErrorDialog(errorMessage);
     }
     setState(() {
       _isLoading = false;
