@@ -5,6 +5,8 @@ import 'product.dart';
 import 'package:http/http.dart' as http;
 
 class Products with ChangeNotifier {
+  final _token;
+  Products(this._token, this._items);
   List<Product> _items = [];
 
   List<Product> get items {
@@ -19,7 +21,7 @@ class Products with ChangeNotifier {
     final indexOfProduct = _items.indexWhere((f) => f.id == product.id);
     if (indexOfProduct >= 0) {
       final url =
-          'https://flutter-statemgmt-default-rtdb.firebaseio.com/products/${product.id}.json';
+          'https://flutter-statemgmt-default-rtdb.firebaseio.com/products/${product.id}.json?auth=$_token';
       var response = await http.patch(url,
           body: jsonEncode({
             'title': product.title,
