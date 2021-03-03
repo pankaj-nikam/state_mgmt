@@ -39,8 +39,8 @@ class Products with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
-    const url =
-        'https://flutter-statemgmt-default-rtdb.firebaseio.com/products.json';
+    final url =
+        'https://flutter-statemgmt-default-rtdb.firebaseio.com/products.json?auth=$_token';
     try {
       final response = await http.post(url,
           body: jsonEncode({
@@ -94,7 +94,7 @@ class Products with ChangeNotifier {
 
   Future<void> deleteProduct(String id) async {
     final url =
-        'https://flutter-statemgmt-default-rtdb.firebaseio.com/products/$id.json';
+        'https://flutter-statemgmt-default-rtdb.firebaseio.com/products/$id.json?auth=$_token';
     final existingProductIndex = _items.indexWhere((f) => f.id == id);
     var existingProduct = _items[existingProductIndex];
     _items.removeAt(existingProductIndex);
