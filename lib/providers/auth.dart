@@ -31,7 +31,7 @@ class Auth with ChangeNotifier {
           body: json.encode({
             'email': email,
             'password': password,
-            'returnSecuredToken': true,
+            'returnSecureToken': true,
           }));
       final responseData = jsonDecode(response.body);
       if (responseData['error'] != null) {
@@ -39,8 +39,7 @@ class Auth with ChangeNotifier {
       }
       _token = responseData['idToken'];
       _userId = responseData['localId'];
-      final expiresIn =
-          '100'; //responseData['expiresIn']; - this should be the ideal case. Documentation is not up to date.
+      final expiresIn = responseData['expiresIn'];
       _expiryDate = DateTime.now().add(
         Duration(
           seconds: int.parse(

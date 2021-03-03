@@ -67,8 +67,8 @@ class Products with ChangeNotifier {
   }
 
   Future<void> fetchAndSetProducts() async {
-    const url =
-        'https://flutter-statemgmt-default-rtdb.firebaseio.com/products.json';
+    final url =
+        'https://flutter-statemgmt-default-rtdb.firebaseio.com/products.json?auth=$_token';
     try {
       final response = await http.get(url);
       final extractedData = jsonDecode(response.body) as Map<String, dynamic>;
