@@ -5,8 +5,9 @@ import 'product.dart';
 import 'package:http/http.dart' as http;
 
 class Products with ChangeNotifier {
-  final _token;
-  Products(this._token, this._items);
+  final String _token;
+  final String _userId;
+  Products(this._token, this._userId, this._items);
   List<Product> _items = [];
 
   List<Product> get items {
@@ -48,7 +49,6 @@ class Products with ChangeNotifier {
             'description': product.description,
             'imageUrl': product.imageUrl,
             'price': product.price,
-            'isFavorite': product.isFavorite,
           }));
       final responseMap = jsonDecode(response.body);
       final newProduct = Product(
@@ -67,22 +67,27 @@ class Products with ChangeNotifier {
   }
 
   Future<void> fetchAndSetProducts() async {
-    final url =
-        'https://flutter-statemgmt-default-rtdb.firebaseio.com/products.json?auth=$_token';
     try {
+      var url =
+          'https://flutter-statemgmt-default-rtdb.firebaseio.com/products.json?auth=$_token';
       final response = await http.get(url);
       final extractedData = jsonDecode(response.body) as Map<String, dynamic>;
       final List<Product> loadedList = [];
       if (extractedData == null) {
         return;
       }
+      url =
+          'https://flutter-statemgmt-default-rtdb.firebaseio.com/userFavorites/$_userId.json?auth=$_token';
+      final favoritesResponse = await http.get(url);
+      final favoriteData = json.decode(favoritesResponse.body);
       extractedData.forEach((productId, productData) {
         loadedList.add(Product(
             id: productId,
             title: productData['title'],
             description: productData['description'],
             price: productData['price'],
-            isFavorite: productData['isFavorite'],
+            isFavorite:
+                favoriteData == null ? false : favoriteData[productId] ?? false,
             imageUrl: productData['imageUrl']));
       });
       _items = loadedList;
