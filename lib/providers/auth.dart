@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:state_mgmt/models/http_exception.dart';
 
 class Auth with ChangeNotifier {
@@ -27,13 +28,15 @@ class Auth with ChangeNotifier {
     return null;
   }
 
-  void logout() {
+  Future<void> logout() async {
     _token = null;
     _userId = null;
     _expiryDate = null;
     if (_authTimer != null) {
       _authTimer.cancel();
     }
+    final _preferences = await SharedPreferences.getInstance();
+    _preferences.remove('auth');
     notifyListeners();
   }
 
@@ -42,7 +45,8 @@ class Auth with ChangeNotifier {
       _authTimer.cancel();
     }
     final timeToExpiry = _expiryDate.difference(DateTime.now()).inSeconds;
-    _authTimer = Timer(Duration(seconds: timeToExpiry), logout);
+    _authTimer =
+        Timer(Duration(seconds: timeToExpiry), () async => await logout());
   }
 
   Future<void> _authenticate(
@@ -71,10 +75,36 @@ class Auth with ChangeNotifier {
         ),
       );
       _autoLogout();
+      final _preferences = await SharedPreferences.getInstance();
+      final userData = json.encode({
+        'token': _token,
+        'userId': _userId,
+        'expiry': _expiryDate.toIso8601String(),
+      });
+      await _preferences.setString('auth', userData);
       notifyListeners();
     } catch (error) {
       throw error;
     }
+  }
+
+  Future<bool> tryAutoLogin() async {
+    final _preferences = await SharedPreferences.getInstance();
+    if (_preferences.containsKey('auth') == false) {
+      return false;
+    }
+    final data = _preferences.getString('auth');
+    final authData = json.decode(data) as Map<String, Object>;
+    final expiryDate = DateTime.parse(authData['expiry']);
+    if (expiryDate.isBefore(DateTime.now())) {
+      return false;
+    }
+    _expiryDate = expiryDate;
+    _token = authData['token'];
+    _userId = authData['userId'];
+    notifyListeners();
+    _autoLogout();
+    return true;
   }
 
   Future<void> signup(String email, String password) async {
