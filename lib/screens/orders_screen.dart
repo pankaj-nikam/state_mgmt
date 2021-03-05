@@ -24,12 +24,16 @@ class OrdersScreen extends StatelessWidget {
               if (snapshot.hasError == false) {
                 return Consumer<Orders>(
                   builder: (ctx, orderData, _) {
-                    return ListView.builder(
-                      itemBuilder: (context, index) {
-                        return OrderItem(orderData.orders[index]);
-                      },
-                      itemCount: orderData.orders.length,
-                    );
+                    return orderData.orders.length > 0
+                        ? ListView.builder(
+                            itemBuilder: (context, index) {
+                              return OrderItem(orderData.orders[index]);
+                            },
+                            itemCount: orderData.orders.length,
+                          )
+                        : Center(
+                            child: Text('No orders yet!'),
+                          );
                   },
                 );
               } else {
