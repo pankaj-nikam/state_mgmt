@@ -49,6 +49,7 @@ class Products with ChangeNotifier {
             'description': product.description,
             'imageUrl': product.imageUrl,
             'price': product.price,
+            'userId': _userId
           }));
       final responseMap = jsonDecode(response.body);
       final newProduct = Product(
@@ -66,10 +67,14 @@ class Products with ChangeNotifier {
     }
   }
 
-  Future<void> fetchAndSetProducts() async {
+  Future<void> fetchAndSetProducts([bool filterByUser = false]) async {
     try {
+      final filterParams = '&orderBy="userId"&equalTo="$_userId"';
       var url =
           'https://flutter-statemgmt-default-rtdb.firebaseio.com/products.json?auth=$_token';
+      if (filterByUser) {
+        url += filterParams;
+      }
       final response = await http.get(url);
       final extractedData = jsonDecode(response.body) as Map<String, dynamic>;
       final List<Product> loadedList = [];

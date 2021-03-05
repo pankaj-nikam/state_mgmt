@@ -8,13 +8,13 @@ import 'edit_product_screen.dart';
 
 class UserProductsScreen extends StatelessWidget {
   Future<void> _refreshProduct(BuildContext ctx) {
-    return Provider.of<Products>(ctx, listen: false).fetchAndSetProducts();
+    return Provider.of<Products>(ctx, listen: false).fetchAndSetProducts(true);
   }
 
   static const routeName = '/UserProductsScreen';
   @override
   Widget build(BuildContext context) {
-    final products = Provider.of<Products>(context).items;
+    // final products = Provider.of<Products>(context ).items;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your Products'),
@@ -28,18 +28,29 @@ class UserProductsScreen extends StatelessWidget {
         ],
       ),
       drawer: SideDrawer(),
-      body: RefreshIndicator(
-        onRefresh: () {
-          return _refreshProduct(context);
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: ListView.separated(
-            separatorBuilder: (context, index) => Divider(),
-            itemCount: products.length,
-            itemBuilder: (_, index) => UserProductItem(products[index]),
-          ),
-        ),
+      body: FutureBuilder(
+        future: _refreshProduct(context),
+        builder: (ctx, snapshot) =>
+            snapshot.connectionState == ConnectionState.waiting
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : RefreshIndicator(
+                    onRefresh: () {
+                      return _refreshProduct(context);
+                    },
+                    child: Consumer<Products>(
+                      builder: (context, products, child) => Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: ListView.separated(
+                          separatorBuilder: (context, index) => Divider(),
+                          itemCount: products.items.length,
+                          itemBuilder: (_, index) =>
+                              UserProductItem(products.items[index]),
+                        ),
+                      ),
+                    ),
+                  ),
       ),
     );
   }
