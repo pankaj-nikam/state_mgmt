@@ -23,7 +23,7 @@ class Products with ChangeNotifier {
     if (indexOfProduct >= 0) {
       final url =
           'https://flutter-statemgmt-default-rtdb.firebaseio.com/products/${product.id}.json?auth=$_token';
-      var response = await http.patch(url,
+      var response = await http.patch(Uri.parse(url),
           body: jsonEncode({
             'title': product.title,
             'description': product.description,
@@ -43,7 +43,7 @@ class Products with ChangeNotifier {
     final url =
         'https://flutter-statemgmt-default-rtdb.firebaseio.com/products.json?auth=$_token';
     try {
-      final response = await http.post(url,
+      final response = await http.post(Uri.parse(url),
           body: jsonEncode({
             'title': product.title,
             'description': product.description,
@@ -75,7 +75,7 @@ class Products with ChangeNotifier {
       if (filterByUser) {
         url += filterParams;
       }
-      final response = await http.get(url);
+      final response = await http.get(Uri.parse(url));
       final extractedData = jsonDecode(response.body) as Map<String, dynamic>;
       final List<Product> loadedList = [];
       if (extractedData == null) {
@@ -83,7 +83,7 @@ class Products with ChangeNotifier {
       }
       url =
           'https://flutter-statemgmt-default-rtdb.firebaseio.com/userFavorites/$_userId.json?auth=$_token';
-      final favoritesResponse = await http.get(url);
+      final favoritesResponse = await http.get(Uri.parse(url));
       final favoriteData = json.decode(favoritesResponse.body);
       extractedData.forEach((productId, productData) {
         loadedList.add(Product(
@@ -110,7 +110,7 @@ class Products with ChangeNotifier {
     _items.removeAt(existingProductIndex);
     notifyListeners();
     try {
-      final result = await http.delete(url);
+      final result = await http.delete(Uri.parse(url));
       if (result.statusCode == 200) {
         existingProduct = null;
       } else {

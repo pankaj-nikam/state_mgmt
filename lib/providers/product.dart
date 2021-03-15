@@ -31,7 +31,8 @@ class Product with ChangeNotifier {
     final url =
         'https://flutter-statemgmt-default-rtdb.firebaseio.com/userFavorites/$userId/$id.json?auth=$token';
     try {
-      var response = await http.put(url, body: jsonEncode(isFavorite));
+      var response =
+          await http.put(Uri.parse(url), body: jsonEncode(isFavorite));
       if (response.statusCode != 200) {
         _setFavoriteValue(oldFavoriteStatus);
       }
