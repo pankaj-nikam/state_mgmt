@@ -140,9 +140,9 @@ class _AuthCardState extends State<AuthCard>
         curve: Curves.fastOutSlowIn,
       ),
     );
-    _heightAnimation.addListener(() {
-      setState(() {});
-    });
+    // _heightAnimation.addListener(() {
+    //   setState(() {});
+    // });
     super.initState();
   }
 
@@ -227,12 +227,15 @@ class _AuthCardState extends State<AuthCard>
         borderRadius: BorderRadius.circular(10.0),
       ),
       elevation: 8.0,
-      child: Container(
-        // height: _authMode == AuthMode.Signup ? 320 : 260,
-        height: _heightAnimation.value.height,
-        constraints: BoxConstraints(minHeight: _heightAnimation.value.height),
-        width: deviceSize.width * 0.75,
-        padding: EdgeInsets.all(16.0),
+      child: AnimatedBuilder(
+        animation: _heightAnimation,
+        builder: (ctx, ch) => Container(
+          height: _heightAnimation.value.height,
+          constraints: BoxConstraints(minHeight: _heightAnimation.value.height),
+          width: deviceSize.width * 0.75,
+          padding: EdgeInsets.all(16.0),
+          child: ch,
+        ),
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
@@ -291,9 +294,10 @@ class _AuthCardState extends State<AuthCard>
                     onPressed: _submit,
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30)),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
                       padding:
-                          EdgeInsets.symmetric(horizontal: 30, vertical: 8),
+                          EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
                     ),
                   ),
                 TextButton(
@@ -301,9 +305,10 @@ class _AuthCardState extends State<AuthCard>
                       '${_authMode == AuthMode.Login ? 'SIGNUP' : 'LOGIN'} INSTEAD'),
                   onPressed: _switchAuthMode,
                   style: TextButton.styleFrom(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 30, vertical: 4),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
                 ),
               ],
             ),
