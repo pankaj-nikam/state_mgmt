@@ -20,8 +20,8 @@ class ProductDetailsScreen extends StatelessWidget {
           SliverAppBar(
             expandedHeight: 300,
             pinned: true,
+            floating: true,
             flexibleSpace: FlexibleSpaceBar(
-              centerTitle: true,
               title: Text(product.title),
               background: Hero(
                 tag: product.id,
